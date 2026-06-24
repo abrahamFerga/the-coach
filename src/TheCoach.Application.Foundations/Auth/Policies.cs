@@ -15,6 +15,9 @@ public static class Policies
     public const string BillingManage = "Billing.Manage";
     public const string UsersInvite = "Users.Invite";
     public const string TenantsManage = "Tenants.Manage";
+    public const string CheckInsManage = "CheckIns.Manage";
+    public const string CheckInsViewOwn = "CheckIns.ViewOwn";
+    public const string CheckInsViewAll = "CheckIns.ViewAll";
 }
 
 public static class Roles

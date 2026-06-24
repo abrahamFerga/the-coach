@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/TheCoach.Api/TheCoach.Api.csproj" />
     <Project Path="src/TheCoach.AppHost/TheCoach.AppHost.csproj" />
+    <Project Path="src/TheCoach.Application.CheckIns/TheCoach.Application.CheckIns.csproj" />
     <Project Path="src/TheCoach.Application.Coaching/TheCoach.Application.Coaching.csproj" />
     <Project Path="src/TheCoach.Application.Foundations/TheCoach.Application.Foundations.csproj" />
     <Project Path="src/TheCoach.Application.HealthTracking/TheCoach.Application.HealthTracking.csproj" />

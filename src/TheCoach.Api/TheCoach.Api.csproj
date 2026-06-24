@@ -15,6 +15,7 @@
     <ProjectReference Include="..\TheCoach.Application.Coaching\TheCoach.Application.Coaching.csproj" />
     <ProjectReference Include="..\TheCoach.ServiceDefaults\TheCoach.ServiceDefaults.csproj" />
     <ProjectReference Include="..\TheCoach.Application.HealthTracking\TheCoach.Application.HealthTracking.csproj" />
+    <ProjectReference Include="..\TheCoach.Application.CheckIns\TheCoach.Application.CheckIns.csproj" />
   </ItemGroup>
 
 </Project>
