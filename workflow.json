@@ -5,7 +5,11 @@
   "cloud": "none",
   "connectors": [],
   "capabilities": [],
-  "github": null,
+  "github": {
+    "repo": "abrahamFerga/the-coach",
+    "project": 5,
+    "visibility": "public"
+  },
   "skills": {
     "self": {
       "marketplace": "my-skills",
