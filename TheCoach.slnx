@@ -4,6 +4,7 @@
     <Project Path="src/TheCoach.AppHost/TheCoach.AppHost.csproj" />
     <Project Path="src/TheCoach.Application.Coaching/TheCoach.Application.Coaching.csproj" />
     <Project Path="src/TheCoach.Application.Foundations/TheCoach.Application.Foundations.csproj" />
+    <Project Path="src/TheCoach.Application.HealthTracking/TheCoach.Application.HealthTracking.csproj" />
     <Project Path="src/TheCoach.ServiceDefaults/TheCoach.ServiceDefaults.csproj" />
     <Project Path="src/TheCoach.Workers/TheCoach.Workers.csproj" />
   </Folder>

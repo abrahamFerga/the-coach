@@ -5,6 +5,8 @@ using TheCoach.Application.Coaching.Persistence;
 using TheCoach.Application.Coaching.Services;
 using TheCoach.Application.Foundations.Auth;
 using TheCoach.Application.Foundations.MultiTenancy;
+using TheCoach.Application.HealthTracking.Persistence;
+using TheCoach.Application.HealthTracking.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,11 @@ builder.Services.AddScoped<ProgramService>();
 builder.Services.AddScoped<ProgramAssignmentService>();
 builder.Services.AddScoped<WorkoutLogService>();
 builder.Services.AddScoped<ComplianceService>();
+
+builder.Services.AddDbContext<HealthTrackingDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("health-tracking")));
+builder.Services.AddScoped<FoodDatabaseService>();
+builder.Services.AddScoped<NutritionService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
@@ -59,6 +66,7 @@ app.MapExerciseEndpoints();
 app.MapProgramEndpoints();
 app.MapWorkoutLogEndpoints();
 app.MapComplianceEndpoints();
+app.MapNutritionEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
