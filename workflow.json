@@ -2,7 +2,7 @@
   "name": "the-coach",
   "industry": "fitness",
   "stage": "architecture",
-  "cloud": "none",
+  "cloud": "azure",
   "connectors": [],
   "capabilities": [],
   "github": {
@@ -16,6 +16,17 @@
       "repo": "abrahamFerga/my-skills",
       "plugins": ["workflow-core", "system-definition", "architecture", "development"]
     },
-    "external": []
+    "external": [
+      {
+        "marketplace": "dotnet/skills",
+        "plugins": ["dotnet", "dotnet-aspnet", "dotnet-data", "dotnet-ai"],
+        "reason": "Authoritative .NET coding-agent skills (Aspire wiring, ASP.NET Core minimal APIs, EF Core migrations, MAF / Azure OpenAI) used to build all backend modules in Stage 3."
+      },
+      {
+        "marketplace": "anthropics/skills",
+        "plugins": ["pdf"],
+        "reason": "PDF handling for progress reports and any document exports."
+      }
+    ]
   }
 }
