@@ -28,6 +28,7 @@ builder.Services.AddDbContext<HealthTrackingDbContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetConnectionString("health-tracking")));
 builder.Services.AddScoped<FoodDatabaseService>();
 builder.Services.AddScoped<NutritionService>();
+builder.Services.AddScoped<BodyMetricService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
@@ -67,6 +68,7 @@ app.MapProgramEndpoints();
 app.MapWorkoutLogEndpoints();
 app.MapComplianceEndpoints();
 app.MapNutritionEndpoints();
+app.MapBodyMetricEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
