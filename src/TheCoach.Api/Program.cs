@@ -7,6 +7,8 @@ using TheCoach.Application.Foundations.Auth;
 using TheCoach.Application.Foundations.MultiTenancy;
 using TheCoach.Application.CheckIns.Persistence;
 using TheCoach.Application.CheckIns.Services;
+using TheCoach.Application.Messaging.Persistence;
+using TheCoach.Application.Messaging.Services;
 using TheCoach.Application.HealthTracking.Persistence;
 using TheCoach.Application.HealthTracking.Services;
 
@@ -36,6 +38,10 @@ builder.Services.AddDbContext<CheckInsDbContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetConnectionString("checkins")));
 builder.Services.AddScoped<CheckInService>();
 
+builder.Services.AddDbContext<MessagingDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("messaging")));
+builder.Services.AddScoped<MessagingService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
@@ -62,6 +68,8 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy(Policies.CheckInsManage, p => p.RequireRole(coachRoles));
     opts.AddPolicy(Policies.CheckInsViewOwn, p => p.RequireRole(allCoachingRoles));
     opts.AddPolicy(Policies.CheckInsViewAll, p => p.RequireRole(coachRoles));
+    opts.AddPolicy(Policies.MessagingViewOwn, p => p.RequireRole(allCoachingRoles));
+    opts.AddPolicy(Policies.MessagingManage, p => p.RequireRole(coachRoles));
 });
 
 var app = builder.Build();
@@ -79,6 +87,7 @@ app.MapComplianceEndpoints();
 app.MapNutritionEndpoints();
 app.MapBodyMetricEndpoints();
 app.MapCheckInEndpoints();
+app.MapMessagingEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
