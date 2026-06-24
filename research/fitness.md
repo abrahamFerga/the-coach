@@ -101,7 +101,16 @@ Capabilities that are either niche, low-ROI, or duplicated by off-shelf tools cl
 ## Open questions for the user
 
 1. **Target segment** — solo personal trainers (1–30 clients), coaching studios (1–10 coaches, 30–300 clients), or enterprise gyms? The UX, pricing model, and multi-tenancy depth differ substantially between these three.
+   **Answer:** All segments — enterprise gyms, coaching studios, solo trainers, and standalone individual users. The platform is fully multi-tenant and configurable per tenant type, serving each segment with the right feature surface.
+
 2. **Remote vs. hybrid** — remote-only coaching (no in-person session tracking), or should the platform support hybrid (in-person session check-in, live session logging with a coach present)?
+   **Answer:** Both remote and hybrid. Mode is configurable per tenant and per session.
+
 3. **Geographic focus** — global English-speaking, US-first, or LATAM? Mexico-first (like `the-ledger`) would add Spanish-locale requirements and peso pricing.
+   **Answer:** US-first.
+
 4. **Athlete tier in v1?** — Sport/athlete performance analytics (training load, HRV, sport-specific drill tagging) is a clear differentiator but narrows the TAM. Include in v1 or defer to v2?
+   **Answer:** Include in v1.
+
 5. **Monetization model** — per-coach subscription (most common), per-client seat pricing, or tiered by feature set? Hybrid (base per-coach + overage per client) is emerging.
+   **Answer:** Per-tenant subscription, tiered by tenant type — individual user, solo trainer, coaching studio, and enterprise gym each have their own plan tier with appropriate feature gates and pricing.
