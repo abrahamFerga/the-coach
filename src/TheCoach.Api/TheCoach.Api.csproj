@@ -18,6 +18,7 @@
     <ProjectReference Include="..\TheCoach.Application.CheckIns\TheCoach.Application.CheckIns.csproj" />
     <ProjectReference Include="..\TheCoach.Application.Messaging\TheCoach.Application.Messaging.csproj" />
     <ProjectReference Include="..\TheCoach.Application.Billing\TheCoach.Application.Billing.csproj" />
+    <ProjectReference Include="..\TheCoach.Application.AiGeneration\TheCoach.Application.AiGeneration.csproj" />
   </ItemGroup>
 
 </Project>

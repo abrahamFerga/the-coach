@@ -7,6 +7,8 @@ using TheCoach.Application.Foundations.Auth;
 using TheCoach.Application.Foundations.MultiTenancy;
 using TheCoach.Application.CheckIns.Persistence;
 using TheCoach.Application.CheckIns.Services;
+using TheCoach.Application.AiGeneration.Persistence;
+using TheCoach.Application.AiGeneration.Services;
 using TheCoach.Application.Billing.Persistence;
 using TheCoach.Application.Billing.Services;
 using TheCoach.Application.Messaging.Persistence;
@@ -48,6 +50,11 @@ builder.Services.AddDbContext<BillingDbContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetConnectionString("billing")));
 builder.Services.AddScoped<IStripeGateway, NoOpStripeGateway>();
 builder.Services.AddScoped<BillingService>();
+
+builder.Services.AddDbContext<AiGenerationDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("ai-generation")));
+builder.Services.AddScoped<IAiGenerationGateway, StubAiGenerationGateway>();
+builder.Services.AddScoped<AiGenerationService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
@@ -96,6 +103,7 @@ app.MapBodyMetricEndpoints();
 app.MapCheckInEndpoints();
 app.MapMessagingEndpoints();
 app.MapBillingEndpoints();
+app.MapAiGenerationEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
