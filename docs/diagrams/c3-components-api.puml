@@ -1,0 +1,69 @@
+@startuml c3-components-api
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title The Coach — C4 L3 Components: TheCoach.Api
+
+Container_Boundary(api, "TheCoach.Api") {
+    Component(mw, "Middleware pipeline", "ASP.NET Core\nIMiddleware", "TenantResolution → RateLimiting → Auth (OIDC) → RBAC policy → Idempotency → ProblemDetails formatter")
+
+    Component(coaching_ep, "Coaching endpoints", "Minimal API group\n/api/v1/programs\n/api/v1/exercises\n/api/v1/workout-logs\n/api/v1/compliance", "Program CRUD + assignment, exercise library, set-by-set workout logging, compliance roster + alert acknowledgement.")
+
+    Component(health_ep, "HealthTracking endpoints", "Minimal API group\n/api/v1/nutrition\n/api/v1/metrics\n/api/v1/check-ins", "Nutrition targets + log, food lookup, body metrics, check-in templates + responses.")
+
+    Component(msg_ep, "Messaging endpoints", "Minimal API group\n/api/v1/conversations\n/api/v1/messages\n/api/v1/push", "Conversation create/list, message send/list, push device registration.")
+
+    Component(billing_ep, "Billing endpoints", "Minimal API group\n/api/v1/billing\n/api/v1/webhooks/stripe", "Plan info, portal session creation, Stripe HMAC-verified webhook receiver.")
+
+    Component(intel_ep, "Intelligence endpoints", "Minimal API group\n/api/v1/intelligence\n/api/v1/chat", "AI generation job enqueue + status poll, workflow automation CRUD, MAF CoachingAssistant chat endpoint.")
+
+    Component(perf_ep, "Performance endpoints", "Minimal API group\n/api/v1/performance", "Training load entries, drill logs, periodization plan CRUD.")
+
+    Component(coaching_app, "Application.Coaching", "Domain service layer", "Program builder, assignment logic, compliance alert engine, exercise library seed.")
+
+    Component(health_app, "Application.HealthTracking", "Domain service layer", "Nutrition target management, food database gateway, metric recording, check-in template evaluation.")
+
+    Component(msg_app, "Application.Messaging", "Domain service layer", "Conversation and message domain logic; raises DomainEvent → OutboxMessage for push dispatch.")
+
+    Component(billing_app, "Application.Billing", "Domain service layer", "Subscription lifecycle, plan tier entitlement checks, Stripe webhook handler, dunning state machine.")
+
+    Component(intel_app, "Application.Intelligence", "Domain service layer", "AI generation request builder + polling, workflow automation executor, drip message scheduler.")
+
+    Component(perf_app, "Application.Performance", "Domain service layer", "ATL/CTL/TSB computation from WorkoutLogs, readiness score rolling average, drill log aggregation.")
+
+    Component(infra, "Infrastructure", "EF Core 10\nOutboxProcessor\nTenantQueryFilter", "Shared DbContext with TenantId global query filter, outbox table + polling processor, PII attribute handling.")
+
+    Component(agent, "CoachingAssistant (MAF)", "Microsoft.Agents.AI\nIChatClient → AzureOpenAI", "Fitness coaching chatbot. Tools: GetClientProfile, GetComplianceStatus, GenerateWorkoutDraft, SendMessage. Conversation history persisted to CoachingSession table.")
+}
+
+ContainerDb(postgres, "PostgreSQL", "", "")
+ContainerDb(redis, "Redis", "", "")
+
+Rel(mw, coaching_ep, "Routes to")
+Rel(mw, health_ep, "Routes to")
+Rel(mw, msg_ep, "Routes to")
+Rel(mw, billing_ep, "Routes to")
+Rel(mw, intel_ep, "Routes to")
+Rel(mw, perf_ep, "Routes to")
+
+Rel(coaching_ep, coaching_app, "Calls")
+Rel(health_ep, health_app, "Calls")
+Rel(msg_ep, msg_app, "Calls")
+Rel(billing_ep, billing_app, "Calls")
+Rel(intel_ep, intel_app, "Calls")
+Rel(intel_ep, agent, "Calls (chat)")
+Rel(perf_ep, perf_app, "Calls")
+
+Rel(coaching_app, infra, "Reads/writes via")
+Rel(health_app, infra, "Reads/writes via")
+Rel(msg_app, infra, "Reads/writes via")
+Rel(billing_app, infra, "Reads/writes via")
+Rel(intel_app, infra, "Reads/writes via")
+Rel(perf_app, infra, "Reads/writes via")
+Rel(agent, infra, "Reads/writes sessions via")
+
+Rel(infra, postgres, "EF Core")
+Rel(infra, redis, "Idempotency + outbox lock")
+
+@enduml

@@ -1,0 +1,36 @@
+@startuml c1-context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title The Coach — C4 L1 Context
+
+Person(trainer, "Trainer / Head Coach", "Builds programs, monitors compliance, messages clients.")
+Person(client, "Client / Athlete", "Logs workouts, nutrition, check-ins on mobile.")
+Person(operator, "Operator", "Manages coaches, billing, org-wide reporting.")
+Person(member, "Member", "Self-coached; browrows program library independently.")
+
+System(thecoach, "The Coach", "Multi-tenant fitness coaching platform.\n.NET 10 + Aspire + React PWA.")
+
+System_Ext(entra, "Azure Entra ID", "OIDC identity provider.\nSingle multi-tenant app registration.")
+System_Ext(stripe, "Stripe", "Subscription billing,\nrecurring payments, dunning.")
+System_Ext(fcm, "Firebase Cloud Messaging", "Push notifications to\nweb, iOS, and Android clients.")
+System_Ext(openai, "Azure OpenAI Service", "GPT-4o for AI program\nand meal plan generation.")
+System_Ext(openfoodfacts, "Open Food Facts API", "Food item lookup\nand barcode resolution.")
+System_Ext(blob, "Azure Blob Storage", "Progress photo and\nvoice note storage.")
+
+Rel(trainer, thecoach, "Builds programs, monitors compliance", "HTTPS / SPA")
+Rel(client, thecoach, "Logs workouts, nutrition, check-ins", "HTTPS / PWA")
+Rel(operator, thecoach, "Manages org, billing, coaches", "HTTPS / SPA")
+Rel(member, thecoach, "Follows self-selected programs", "HTTPS / PWA")
+
+Rel(thecoach, entra, "Validates OIDC tokens", "HTTPS / OIDC")
+Rel(thecoach, stripe, "Manages subscriptions\nand payment events", "HTTPS / Stripe SDK")
+Rel(thecoach, fcm, "Sends push notifications", "HTTPS / FCM HTTP v1")
+Rel(thecoach, openai, "Generates workout and\nmeal plan drafts", "HTTPS / REST")
+Rel(thecoach, openfoodfacts, "Resolves food items\nand barcodes", "HTTPS / REST")
+Rel(thecoach, blob, "Stores encrypted\nprogress photos", "HTTPS / Azure SDK")
+
+Rel_Back(thecoach, stripe, "Receives payment\nwebhook events", "HTTPS / Webhook")
+
+@enduml

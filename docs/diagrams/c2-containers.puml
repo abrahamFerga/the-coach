@@ -1,0 +1,48 @@
+@startuml c2-containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title The Coach — C4 L2 Containers
+
+Person(trainer, "Trainer / Operator")
+Person(client, "Client / Athlete / Member")
+
+System_Boundary(thecoach, "The Coach Platform") {
+    Container(spa, "TheCoach.Web", "Vite + React + TypeScript\nshadcn/ui + Tailwind CSS\nPWA (Vite PWA plugin)", "Trainer console (desktop-first) and client mobile view (PWA). Feature folders per bounded context. Chatbot slide-over panel.")
+
+    Container(api, "TheCoach.Api", ".NET 10 minimal APIs\nASP.NET Core", "REST API grouped by bounded context. Versioned at /api/v1/. Problem Details errors. Idempotency keys on writes. Per-tenant rate limiting.")
+
+    Container(workers, "TheCoach.Workers", ".NET 10 IHostedService\nQuartz.NET", "Background scheduler (ComplianceAlertScanner, CheckInReminderDispatcher, StripeSubscriptionSyncJob) and reactive workers (PushNotificationDispatcher, WorkflowAutomationRunner, AIGenerationWorker) via Redis pub/sub.")
+
+    ContainerDb(postgres, "PostgreSQL 16", "Azure Database for PostgreSQL\nFlexible Server", "Primary operational store. Shared schema with EF Core global query filters enforcing TenantId on all domain tables. Audit schema is separate.")
+
+    ContainerDb(redis, "Redis", "Azure Cache for Redis\n(Basic C1)", "Session state, idempotency key replay (24h TTL), rate limit windows, outbox processor coordination, and pub/sub message bus for reactive workers.")
+
+    Container(blob, "Azure Blob Storage", "Azure Storage Account", "Progress photos, voice note recordings. Blobs are encrypted at rest (Microsoft-managed key). SAS token per read; coach/client ownership enforced.")
+}
+
+System_Ext(entra, "Azure Entra ID", "OIDC / JWT")
+System_Ext(stripe, "Stripe", "Webhooks + SDK")
+System_Ext(fcm, "Firebase Cloud Messaging", "Push HTTP v1")
+System_Ext(openai, "Azure OpenAI", "GPT-4o REST")
+System_Ext(openfoodfacts, "Open Food Facts API", "REST")
+System_Ext(keyvault, "Azure Key Vault", "Secrets at runtime")
+
+Rel(trainer, spa, "Uses trainer console", "HTTPS")
+Rel(client, spa, "Logs workouts, nutrition, check-ins", "HTTPS / PWA")
+Rel(spa, api, "API calls (JSON/REST)", "HTTPS")
+Rel(api, postgres, "Reads / writes domain data", "EF Core / TCP")
+Rel(api, redis, "Session, idempotency, rate limits, pub/sub", "StackExchange.Redis")
+Rel(api, blob, "Upload/download SAS tokens", "Azure SDK")
+Rel(api, keyvault, "Reads secrets at startup", "Azure SDK / Managed Identity")
+Rel(api, entra, "Validates bearer tokens", "HTTPS / OIDC")
+Rel(api, stripe, "Creates/updates subscriptions", "HTTPS / Stripe SDK")
+Rel(api, openai, "AI generation requests", "HTTPS / Azure OpenAI SDK")
+Rel(api, openfoodfacts, "Food item lookups", "HTTPS / REST")
+Rel(stripe, api, "Payment webhook events", "HTTPS / Webhook → /api/v1/webhooks/stripe")
+Rel(workers, postgres, "Reads/writes job state, outbox", "EF Core / TCP")
+Rel(workers, redis, "Pub/sub, outbox coordination", "StackExchange.Redis")
+Rel(workers, fcm, "Dispatches push notifications", "HTTPS / FCM HTTP v1")
+
+@enduml
