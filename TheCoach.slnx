@@ -3,6 +3,7 @@
     <Project Path="src/TheCoach.Api/TheCoach.Api.csproj" />
     <Project Path="src/TheCoach.AppHost/TheCoach.AppHost.csproj" />
     <Project Path="src/TheCoach.Application.AiGeneration/TheCoach.Application.AiGeneration.csproj" />
+    <Project Path="src/TheCoach.Application.AthleteAnalytics/TheCoach.Application.AthleteAnalytics.csproj" />
     <Project Path="src/TheCoach.Application.Automations/TheCoach.Application.Automations.csproj" />
     <Project Path="src/TheCoach.Application.Billing/TheCoach.Application.Billing.csproj" />
     <Project Path="src/TheCoach.Application.CheckIns/TheCoach.Application.CheckIns.csproj" />

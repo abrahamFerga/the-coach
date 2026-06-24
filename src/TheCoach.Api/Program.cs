@@ -17,6 +17,8 @@ using TheCoach.Application.HealthTracking.Persistence;
 using TheCoach.Application.HealthTracking.Services;
 using TheCoach.Application.Automations.Persistence;
 using TheCoach.Application.Automations.Services;
+using TheCoach.Application.AthleteAnalytics.Persistence;
+using TheCoach.Application.AthleteAnalytics.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,10 @@ builder.Services.AddDbContext<AutomationsDbContext>(opts =>
 builder.Services.AddScoped<IAutomationActionDispatcher, LoggingActionDispatcher>();
 builder.Services.AddScoped<AutomationService>();
 
+builder.Services.AddDbContext<AthleteAnalyticsDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("athlete-analytics")));
+builder.Services.AddScoped<AthleteAnalyticsService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
@@ -92,6 +98,10 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy(Policies.MessagingViewOwn, p => p.RequireRole(allCoachingRoles));
     opts.AddPolicy(Policies.MessagingManage, p => p.RequireRole(coachRoles));
     opts.AddPolicy(Policies.AutomationsManage, p => p.RequireRole(coachRoles));
+    string[] athleteRoles = [Roles.Athlete, Roles.Coach, Roles.HeadCoach];
+    opts.AddPolicy(Policies.AthleteAnalyticsLog, p => p.RequireRole(athleteRoles));
+    opts.AddPolicy(Policies.AthleteAnalyticsView, p => p.RequireRole(athleteRoles));
+    opts.AddPolicy(Policies.AthleteAnalyticsManage, p => p.RequireRole([Roles.HeadCoach, Roles.Coach]));
 });
 
 var app = builder.Build();
@@ -113,6 +123,7 @@ app.MapMessagingEndpoints();
 app.MapBillingEndpoints();
 app.MapAiGenerationEndpoints();
 app.MapAutomationEndpoints();
+app.MapAthleteAnalyticsEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
