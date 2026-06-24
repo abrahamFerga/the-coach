@@ -15,6 +15,8 @@ using TheCoach.Application.Messaging.Persistence;
 using TheCoach.Application.Messaging.Services;
 using TheCoach.Application.HealthTracking.Persistence;
 using TheCoach.Application.HealthTracking.Services;
+using TheCoach.Application.Automations.Persistence;
+using TheCoach.Application.Automations.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +58,11 @@ builder.Services.AddDbContext<AiGenerationDbContext>(opts =>
 builder.Services.AddScoped<IAiGenerationGateway, StubAiGenerationGateway>();
 builder.Services.AddScoped<AiGenerationService>();
 
+builder.Services.AddDbContext<AutomationsDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("automations")));
+builder.Services.AddScoped<IAutomationActionDispatcher, LoggingActionDispatcher>();
+builder.Services.AddScoped<AutomationService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
@@ -84,6 +91,7 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy(Policies.CheckInsViewAll, p => p.RequireRole(coachRoles));
     opts.AddPolicy(Policies.MessagingViewOwn, p => p.RequireRole(allCoachingRoles));
     opts.AddPolicy(Policies.MessagingManage, p => p.RequireRole(coachRoles));
+    opts.AddPolicy(Policies.AutomationsManage, p => p.RequireRole(coachRoles));
 });
 
 var app = builder.Build();
@@ -104,6 +112,7 @@ app.MapCheckInEndpoints();
 app.MapMessagingEndpoints();
 app.MapBillingEndpoints();
 app.MapAiGenerationEndpoints();
+app.MapAutomationEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
