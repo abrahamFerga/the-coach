@@ -7,12 +7,18 @@ using TheCoach.Application.Foundations.Auth;
 using TheCoach.Application.Foundations.MultiTenancy;
 using TheCoach.Application.CheckIns.Persistence;
 using TheCoach.Application.CheckIns.Services;
+using TheCoach.Application.AiGeneration.Persistence;
+using TheCoach.Application.AiGeneration.Services;
 using TheCoach.Application.Billing.Persistence;
 using TheCoach.Application.Billing.Services;
 using TheCoach.Application.Messaging.Persistence;
 using TheCoach.Application.Messaging.Services;
 using TheCoach.Application.HealthTracking.Persistence;
 using TheCoach.Application.HealthTracking.Services;
+using TheCoach.Application.Automations.Persistence;
+using TheCoach.Application.Automations.Services;
+using TheCoach.Application.AthleteAnalytics.Persistence;
+using TheCoach.Application.AthleteAnalytics.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +55,20 @@ builder.Services.AddDbContext<BillingDbContext>(opts =>
 builder.Services.AddScoped<IStripeGateway, NoOpStripeGateway>();
 builder.Services.AddScoped<BillingService>();
 
+builder.Services.AddDbContext<AiGenerationDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("ai-generation")));
+builder.Services.AddScoped<IAiGenerationGateway, StubAiGenerationGateway>();
+builder.Services.AddScoped<AiGenerationService>();
+
+builder.Services.AddDbContext<AutomationsDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("automations")));
+builder.Services.AddScoped<IAutomationActionDispatcher, LoggingActionDispatcher>();
+builder.Services.AddScoped<AutomationService>();
+
+builder.Services.AddDbContext<AthleteAnalyticsDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("athlete-analytics")));
+builder.Services.AddScoped<AthleteAnalyticsService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
@@ -77,6 +97,11 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy(Policies.CheckInsViewAll, p => p.RequireRole(coachRoles));
     opts.AddPolicy(Policies.MessagingViewOwn, p => p.RequireRole(allCoachingRoles));
     opts.AddPolicy(Policies.MessagingManage, p => p.RequireRole(coachRoles));
+    opts.AddPolicy(Policies.AutomationsManage, p => p.RequireRole(coachRoles));
+    string[] athleteRoles = [Roles.Athlete, Roles.Coach, Roles.HeadCoach];
+    opts.AddPolicy(Policies.AthleteAnalyticsLog, p => p.RequireRole(athleteRoles));
+    opts.AddPolicy(Policies.AthleteAnalyticsView, p => p.RequireRole(athleteRoles));
+    opts.AddPolicy(Policies.AthleteAnalyticsManage, p => p.RequireRole([Roles.HeadCoach, Roles.Coach]));
 });
 
 var app = builder.Build();
@@ -96,6 +121,9 @@ app.MapBodyMetricEndpoints();
 app.MapCheckInEndpoints();
 app.MapMessagingEndpoints();
 app.MapBillingEndpoints();
+app.MapAiGenerationEndpoints();
+app.MapAutomationEndpoints();
+app.MapAthleteAnalyticsEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
