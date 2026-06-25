@@ -7,6 +7,8 @@ using TheCoach.Application.Foundations.Auth;
 using TheCoach.Application.Foundations.MultiTenancy;
 using TheCoach.Application.CheckIns.Persistence;
 using TheCoach.Application.CheckIns.Services;
+using TheCoach.Application.Billing.Persistence;
+using TheCoach.Application.Billing.Services;
 using TheCoach.Application.Messaging.Persistence;
 using TheCoach.Application.Messaging.Services;
 using TheCoach.Application.HealthTracking.Persistence;
@@ -41,6 +43,11 @@ builder.Services.AddScoped<CheckInService>();
 builder.Services.AddDbContext<MessagingDbContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetConnectionString("messaging")));
 builder.Services.AddScoped<MessagingService>();
+
+builder.Services.AddDbContext<BillingDbContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("billing")));
+builder.Services.AddScoped<IStripeGateway, NoOpStripeGateway>();
+builder.Services.AddScoped<BillingService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
@@ -88,6 +95,7 @@ app.MapNutritionEndpoints();
 app.MapBodyMetricEndpoints();
 app.MapCheckInEndpoints();
 app.MapMessagingEndpoints();
+app.MapBillingEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
