@@ -14,6 +14,7 @@ public class CoachingDbContext : ApplicationDbContext
     public DbSet<Exercise> Exercises => Set<Exercise>();
     public DbSet<ProgramAssignment> ProgramAssignments => Set<ProgramAssignment>();
     public DbSet<WorkoutLog> WorkoutLogs => Set<WorkoutLog>();
+    public DbSet<ComplianceAlert> ComplianceAlerts => Set<ComplianceAlert>();
 
     public CoachingDbContext(DbContextOptions<CoachingDbContext> options, ITenantContext tenantContext)
         : base(options, tenantContext)
@@ -62,6 +63,12 @@ public class CoachingDbContext : ApplicationDbContext
             b.ToTable("workout_logs");
             b.HasIndex(wl => new { wl.TenantId, wl.ClientId, wl.LoggedAt });
             b.Property(wl => wl.SetsJson).HasColumnName("sets");
+        });
+
+        modelBuilder.Entity<ComplianceAlert>(b =>
+        {
+            b.ToTable("compliance_alerts");
+            b.HasIndex(ca => new { ca.TenantId, ca.CoachId, ca.ClientId, ca.AcknowledgedAt });
         });
     }
 }
