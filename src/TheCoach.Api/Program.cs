@@ -20,6 +20,7 @@ builder.Services.AddScoped<ExerciseService>();
 builder.Services.AddScoped<ProgramService>();
 builder.Services.AddScoped<ProgramAssignmentService>();
 builder.Services.AddScoped<WorkoutLogService>();
+builder.Services.AddScoped<ComplianceService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
@@ -57,6 +58,7 @@ app.UseAuthorization();
 app.MapExerciseEndpoints();
 app.MapProgramEndpoints();
 app.MapWorkoutLogEndpoints();
+app.MapComplianceEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
