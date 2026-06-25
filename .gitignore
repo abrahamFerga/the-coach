@@ -1,0 +1,33 @@
+## .NET
+bin/
+obj/
+*.user
+.vs/
+*.suo
+*.vssscc
+.idea/
+*.DotSettings.user
+
+## Aspire
+.aspire/
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/packages/
+
+## Publish
+publish/
+
+## Environment / secrets
+.env
+.env.*
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+secrets.json
+
+## OS
+Thumbs.db
+.DS_Store
+Desktop.ini
