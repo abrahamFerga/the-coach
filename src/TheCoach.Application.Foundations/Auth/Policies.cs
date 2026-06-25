@@ -20,6 +20,10 @@ public static class Policies
     public const string CheckInsViewAll = "CheckIns.ViewAll";
     public const string MessagingViewOwn = "Messaging.ViewOwn";
     public const string MessagingManage = "Messaging.Manage";
+    public const string AutomationsManage = "Automations.Manage";
+    public const string AthleteAnalyticsLog = "AthleteAnalytics.Log";
+    public const string AthleteAnalyticsView = "AthleteAnalytics.View";
+    public const string AthleteAnalyticsManage = "AthleteAnalytics.Manage";
 }
 
 public static class Roles
