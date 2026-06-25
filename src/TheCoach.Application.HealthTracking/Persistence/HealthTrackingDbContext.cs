@@ -10,6 +10,7 @@ public class HealthTrackingDbContext : ApplicationDbContext
     public DbSet<FoodItem> FoodItems => Set<FoodItem>();
     public DbSet<NutritionTarget> NutritionTargets => Set<NutritionTarget>();
     public DbSet<NutritionLog> NutritionLogs => Set<NutritionLog>();
+    public DbSet<BodyMetric> BodyMetrics => Set<BodyMetric>();
 
     public HealthTrackingDbContext(DbContextOptions<HealthTrackingDbContext> options, ITenantContext tenantContext)
         : base(options, tenantContext)
@@ -38,6 +39,13 @@ public class HealthTrackingDbContext : ApplicationDbContext
             b.ToTable("nutrition_logs");
             b.HasIndex(l => new { l.TenantId, l.ClientId, l.LogDate }).IsUnique();
             b.Property(l => l.FoodItemsJson).HasColumnName("food_items");
+        });
+
+        modelBuilder.Entity<BodyMetric>(b =>
+        {
+            b.ToTable("body_metrics");
+            b.HasIndex(m => new { m.TenantId, m.ClientId, m.RecordedOn }).IsUnique();
+            b.Property(m => m.MeasurementsJson).HasColumnName("measurements");
         });
     }
 }
