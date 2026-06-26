@@ -22,6 +22,8 @@ using TheCoach.Application.AthleteAnalytics.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddOpenApi();
 builder.Services.AddHttpContextAccessor();
 
@@ -127,10 +129,28 @@ app.MapAthleteAnalyticsEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
+await EnsureSchemasAsync(app);
 await SeedExercisesIfNeeded(app);
 await SeedCheckInTemplatesIfNeeded(app);
 
 app.Run();
+
+// No EF migrations are shipped yet; create each context's schema on startup so the
+// system boots against a fresh Postgres. Each context owns a separate database, so
+// there is no cross-context contention. Replace with migrations before production.
+static async Task EnsureSchemasAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var sp = scope.ServiceProvider;
+    await sp.GetRequiredService<CoachingDbContext>().Database.EnsureCreatedAsync();
+    await sp.GetRequiredService<HealthTrackingDbContext>().Database.EnsureCreatedAsync();
+    await sp.GetRequiredService<CheckInsDbContext>().Database.EnsureCreatedAsync();
+    await sp.GetRequiredService<MessagingDbContext>().Database.EnsureCreatedAsync();
+    await sp.GetRequiredService<BillingDbContext>().Database.EnsureCreatedAsync();
+    await sp.GetRequiredService<AiGenerationDbContext>().Database.EnsureCreatedAsync();
+    await sp.GetRequiredService<AutomationsDbContext>().Database.EnsureCreatedAsync();
+    await sp.GetRequiredService<AthleteAnalyticsDbContext>().Database.EnsureCreatedAsync();
+}
 
 static async Task SeedExercisesIfNeeded(WebApplication app)
 {

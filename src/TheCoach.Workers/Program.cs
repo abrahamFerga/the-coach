@@ -8,6 +8,8 @@ using TheCoach.Workers.Jobs;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddDbContext<CoachingDbContext>((sp, opts) =>
     opts.UseNpgsql(builder.Configuration.GetConnectionString("coaching")));
 
