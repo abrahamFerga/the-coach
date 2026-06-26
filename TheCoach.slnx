@@ -16,5 +16,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/TheCoach.Tests.Integration/TheCoach.Tests.Integration.csproj" />
+    <Project Path="tests/TheCoach.Tests.Smoke/TheCoach.Tests.Smoke.csproj" />
   </Folder>
 </Solution>

@@ -1,0 +1,29 @@
+### the-coach — smoke request catalog
+### Run the system first:  aspire run --project src/TheCoach.AppHost
+### Then send these against the API resource. The base URL is printed by the
+### Aspire dashboard; override @host below to match (the dev HTTPS port varies).
+###
+### Auth: endpoints other than /health and the Stripe webhook require a Bearer
+### token. Supply a TEST OIDC token via env — never inline a real one.
+
+@host = https://localhost:7443
+@token = {{$dotenv TOKEN}}
+
+### Liveness — anonymous, always on. Proves the app booted and the DB is reachable.
+GET {{host}}/health
+
+### OpenAPI document (development only).
+GET {{host}}/openapi/v1.json
+
+### Authorized endpoint without a token — MUST return 401 (security contract is on).
+GET {{host}}/api/v1/automations
+
+### Authorized endpoint with a test token — list automation workflows for the tenant.
+GET {{host}}/api/v1/automations
+Authorization: Bearer {{token}}
+
+### Stripe webhook — anonymous by design (signature-verified, not bearer-authed).
+POST {{host}}/api/v1/billing/webhook
+Content-Type: application/json
+
+{ "type": "ping" }
